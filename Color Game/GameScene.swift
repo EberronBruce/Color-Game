@@ -33,6 +33,10 @@ class GameScene: SKScene {
         player?.position = CGPoint(x: playerPosition, y: self.size.height / 2)
         
         self.addChild(player!)
+        
+        let pulse = SKEmitterNode(fileNamed: "pulse")!
+        player?.addChild(pulse)
+        pulse.position = CGPoint(x: 0, y: 0)
     }
     
     override func didMove(to view: SKView) {
