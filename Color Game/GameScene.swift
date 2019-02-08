@@ -18,6 +18,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     let playerCategory:UInt32 = 0x1 << 0
     let enemyCategory:UInt32 = 0x1 << 1
     let targetCategory:UInt32 = 0x1 << 2
+    let powerUpCategory:UInt32 = 0x1 << 3
     
     // MARK: Nodes
     var player:SKSpriteNode?
@@ -139,6 +140,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             movePlayerToStart()
         } else if playerBody.categoryBitMask == playerCategory && otherBody.categoryBitMask == targetCategory {
             nextLevel(playerPhysicsBody: playerBody)
+        } else if playerBody.categoryBitMask == playerCategory && otherBody.categoryBitMask == powerUpCategory {
+            self.run(SKAction.playSoundFileNamed("powerUp.wav", waitForCompletion: true))
+            otherBody.node?.removeFromParent()
+            remainingTime += 5
         }
     }
     
