@@ -23,27 +23,55 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var player:SKSpriteNode?
     var target:SKSpriteNode?
     
+    // MARK: HUD
+    var timeLabel:SKLabelNode?
+    var scoreLabel:SKLabelNode?
+    var currentScore:Int = 0 {
+        didSet {
+            self.scoreLabel?.text = "SCORE: \(self.currentScore)"
+        }
+    }
+    var remainingTime:TimeInterval = 60 {
+        didSet {
+            self.timeLabel?.text = "TIME: \(Int(self.remainingTime))"
+        }
+    }
+    
     // MARK: Arrays
     var tracksArray:[SKSpriteNode]? = [SKSpriteNode]()
     let trackVelocities = [180, 200, 250]
     var directionArray = [Bool]()
     var velocityArray = [Int]()
     
+    // MARK: Sound
+    
+    let moveSound = SKAction.playSoundFileNamed("move.wav", waitForCompletion: false)
+    var backgroundNoise:SKAudioNode!
+    
     // MARK: Rest
     var currentTrack = 0
     var movingToTrack = false
     
-    let moveSound = SKAction.playSoundFileNamed("move.wav", waitForCompletion: false)
+    
     
   
     // MARK: - Entry Point
     
     override func didMove(to view: SKView) {
         setupTracks()
+        
+        createHUD()
+        launchGameTimer()
+        
         createPlayer()
         createTarget()
         
         self.physicsWorld.contactDelegate = self
+        
+        if let musicURL = Bundle.main.url(forResource: "background", withExtension: "wav") {
+            backgroundNoise = SKAudioNode(url: musicURL)
+            addChild(backgroundNoise)
+        }
        
         if let numberOfTracks = tracksArray?.count {
             for _ in 0 ... numberOfTracks {
@@ -107,6 +135,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         if playerBody.categoryBitMask == playerCategory && otherBody.categoryBitMask == enemyCategory {
+            self.run(SKAction.playSoundFileNamed("fail.wav", waitForCompletion: true))
             movePlayerToStart()
         } else if playerBody.categoryBitMask == playerCategory && otherBody.categoryBitMask == targetCategory {
             nextLevel(playerPhysicsBody: playerBody)
@@ -122,5 +151,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 movePlayerToStart()
             }
         }
+        
+        if remainingTime <= 5 {
+            timeLabel?.fontColor = UIColor.red
+        }
+        
     }
 }

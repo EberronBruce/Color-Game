@@ -11,6 +11,14 @@ import GameplayKit
 
 extension GameScene {
     
+    func launchGameTimer() {
+        let timeAction = SKAction.repeatForever(SKAction.sequence([SKAction.run({
+            self.remainingTime -= 1
+        }),SKAction.wait(forDuration: 1)]))
+        
+        timeLabel?.run(timeAction)
+    }
+    
     func moveVertically (up:Bool) {
         if up {
             let moveAction = SKAction.moveBy(x: 0, y: 3, duration: 0.01)
@@ -75,6 +83,8 @@ extension GameScene {
     }
     
     func nextLevel(playerPhysicsBody: SKPhysicsBody) {
+        currentScore += 1
+        self.run(SKAction.playSoundFileNamed("levelUp.wav", waitForCompletion: true))
         let emitter = SKEmitterNode(fileNamed: "fireworks.sks")
         playerPhysicsBody.node?.addChild(emitter!)
         
